@@ -331,7 +331,7 @@
   var SHAPES = ["circle", "grid", "stripe", "arc"];
   // 书架上的杂志不是摆得笔直的：TILTS 是左右歪斜，TILT_X 是前后仰角（负值向后靠）
   var TILTS = [-0.9, 0.5, -0.4, 0.8, -0.7, 0.4, -1, 0.6];
-  var TILT_X = [20, 15, 22, 13, 18, 16, 21, 14];
+  var TILT_X = [11, 7, 13, 5, 9, 8, 12, 6];
 
   function buildCover(entry, index) {
     var slot = document.createElement("button");
@@ -371,7 +371,7 @@
 
     var open = document.createElement("span");
     open.className = "cover__open";
-    open.textContent = "打开 →";
+    open.textContent = "打开";
 
     foot.appendChild(en);
     foot.appendChild(count);
