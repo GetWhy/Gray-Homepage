@@ -58,9 +58,10 @@ function init() {
     indigo: '#51508f'
   };
   const SHAPES = ['circle', 'grid', 'stripe', 'arc'];
-  // 第一排立正，第二排向后靠、略微歪斜（弧度；rotateX 为负 = 顶部远离镜头）
+  // 第一排立正，第二排向后靠（弧度；rotateX 为负 = 顶部远离镜头）。
+  // 不加左右歪斜：相邻两本一左一右会让书缝变成 V 形，看起来像没摆正。
   const TILT_X = [0, 0, 0, 0, -0.05, -0.17, -0.21, -0.15];
-  const TILT_Z = [0, 0, 0, 0, 0.025, -0.012, 0.01, -0.02];
+  const TILT_Z = [0, 0, 0, 0, 0, 0, 0, 0];
 
   const pad2 = (n) => (n < 10 ? '0' + n : String(n));
 
@@ -194,7 +195,7 @@ function init() {
   const W = 1;
   const H = 1;
   const THICK = 0.045;
-  const SHELF_H = 0.05;
+  const SHELF_H = 0.07;
   const FOV = 32;
 
   const scene = new THREE.Scene();
@@ -208,7 +209,8 @@ function init() {
   scene.add(new THREE.HemisphereLight(0xffffff, 0xb9aa93, 1.25));
 
   const sun = new THREE.DirectionalLight(0xffffff, 1.7);
-  sun.position.set(2.5, 5.5, 4.5);
+  // 光偏正上方：层板的投影主要落在正下方，两端不会拖出大块斜影
+  sun.position.set(1.3, 7.5, 5);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
   sun.shadow.camera.left = -4;
@@ -221,14 +223,32 @@ function init() {
   sun.target.position.set(0, -0.6, 0);
   scene.add(sun, sun.target);
 
-  // 一面只接收阴影的「墙」，让层板和杂志能把影子投在页面背景上
-  const wall = new THREE.Mesh(
-    new THREE.PlaneGeometry(24, 16),
-    new THREE.ShadowMaterial({ color: 0x3a322b, opacity: 0.26 })
-  );
-  wall.position.set(0, -0.6, -0.34);
-  wall.receiveShadow = true;
-  scene.add(wall);
+  // 层板正下方的柔和投影：平行光的阴影边缘是硬的，投在墙上会变成两端带斜线的梯形，
+  // 所以改用一张渐变贴图，观感更接近真实层板下方的漫射阴影
+  const shadowTexture = (() => {
+    const c = document.createElement('canvas');
+    c.width = 64;
+    c.height = 128;
+    const ctx = c.getContext('2d');
+    const down = ctx.createLinearGradient(0, 0, 0, 128);
+    down.addColorStop(0, 'rgba(58,50,43,0.5)');
+    down.addColorStop(0.3, 'rgba(58,50,43,0.16)');
+    down.addColorStop(1, 'rgba(58,50,43,0)');
+    ctx.fillStyle = down;
+    ctx.fillRect(0, 0, 64, 128);
+    const across = ctx.createLinearGradient(0, 0, 64, 0);
+    across.addColorStop(0, 'rgba(0,0,0,0)');
+    across.addColorStop(0.08, 'rgba(0,0,0,1)');
+    across.addColorStop(0.92, 'rgba(0,0,0,1)');
+    across.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.fillStyle = across;
+    ctx.fillRect(0, 0, 64, 128);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  })();
+  const shadowMats = [];
 
   const shelfMat = new THREE.MeshStandardMaterial({
     color: readShelfColor(),
@@ -360,13 +380,21 @@ function init() {
     while (shelfGroup.children.length) {
       shelfGroup.remove(shelfGroup.children[0]);
     }
+    shadowMats.length = 0;
 
     function addShelf(length, y) {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(length, SHELF_H, 0.62), shelfMat);
       mesh.position.set(0, y - SHELF_H / 2, 0);
-      mesh.castShadow = true;
+      mesh.castShadow = false;
       mesh.receiveShadow = true;
       shelfGroup.add(mesh);
+
+      const mat = new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false });
+      shadowMats.push(mat);
+      const shade = new THREE.Mesh(new THREE.PlaneGeometry(length, 0.95), mat);
+      shade.position.set(0, y - SHELF_H - 0.475, -0.33);
+      shade.renderOrder = -1;
+      shelfGroup.add(shade);
     }
 
     if (stacked) {
@@ -418,7 +446,7 @@ function init() {
     const half = Math.tan((FOV * Math.PI) / 360);
     const aspect = width / height;
     const distance = Math.max(boundsH / 2 / half, boundsW / 2 / (half * aspect)) * (stacked ? 1.05 : 1.07);
-    const tilt = stacked ? 0.03 : 0.16;
+    const tilt = stacked ? 0.02 : 0.07;
     camera.aspect = aspect;
     camera.position.set(0, boundsCy + distance * Math.sin(tilt), distance * Math.cos(tilt));
     camera.lookAt(0, boundsCy, 0);
@@ -658,7 +686,7 @@ function init() {
     const shelfTarget = state === 'focus' ? 0.4 : 1;
     shelfOpacity += (shelfTarget - shelfOpacity) * smooth;
     shelfMat.opacity = shelfOpacity;
-    wall.material.opacity = 0.26 * shelfOpacity;
+    shadowMats.forEach((mat) => { mat.opacity = 0.62 * shelfOpacity; });
 
     updateOverlay();
     renderer.render(scene, camera);
