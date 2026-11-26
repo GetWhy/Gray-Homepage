@@ -931,6 +931,170 @@ body.is-settled .card {
   }
 }
 
+/* 3D 书架（three.js 渲染；不支持 WebGL 时回退到上面的 CSS 书架）----------- */
+.stage {
+  position: relative;
+  height: 500px;
+  margin: 4px 0 2px;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.stage.is-on {
+  opacity: 1;
+}
+
+/* 放大态时给舞台垫一层底色，盖住背后的节气插画，突出被选中的杂志 */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.stage.is-focus::before {
+  opacity: 0.78;
+}
+
+.stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+
+.stage.is-hover canvas {
+  cursor: pointer;
+}
+
+.has-shelf3d .shelf {
+  display: none !important;
+}
+
+.stage__open,
+.stage__enter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 7px 18px;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s var(--ease-out);
+}
+
+.stage__open {
+  background: rgba(255, 255, 255, 0.94);
+  color: #3a322b;
+  box-shadow: 0 2px 8px rgba(58, 50, 43, 0.18);
+  transform: translate(-50%, 8px);
+}
+
+.stage.is-hover:not(.is-focus) .stage__open {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.stage__enter {
+  background: #1f1b17;
+  color: #f7f2e7;
+  transform: translate(-50%, 10px);
+}
+
+.stage.is-focus .stage__enter {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+  transition-delay: 0.12s;
+}
+
+.stage__close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  padding: 5px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-2);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.stage.is-focus .stage__close {
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 0.12s;
+}
+
+.stage__close:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.stage__focus {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  max-width: 27%;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.stage.is-focus .stage__focus {
+  opacity: 1;
+  transition-delay: 0.1s;
+}
+
+.stage__focus-name {
+  margin: 0 0 6px;
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.stage__focus-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+@media (max-width: 720px) {
+  .stage {
+    height: min(750px, 210vw);
+  }
+
+  .stage__focus {
+    top: 14px;
+    left: 16px;
+    max-width: 84%;
+    transform: none;
+  }
+
+  .stage__focus-name {
+    font-size: 24px;
+  }
+}
+
 /* 降低动效偏好 ---------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .head,
@@ -943,6 +1107,12 @@ body.is-settled .card {
     animation: none !important;
   }
 
+  .stage,
+  .stage::before,
+  .stage__open,
+  .stage__enter,
+  .stage__close,
+  .stage__focus,
   .card,
   .cover,
   .filter,

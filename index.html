@@ -57,6 +57,17 @@
 
     <section class="shelf" id="shelf" aria-label="导航分组"></section>
 
+    <div class="stage" id="stage" aria-label="导航分组" hidden>
+      <canvas id="stageCanvas"></canvas>
+      <button class="stage__open" id="stageOpen" type="button">查看</button>
+      <div class="stage__focus" id="stageFocus" aria-live="polite">
+        <h2 class="stage__focus-name" id="stageFocusName"></h2>
+        <p class="stage__focus-desc" id="stageFocusDesc"></p>
+      </div>
+      <button class="stage__enter" id="stageEnter" type="button">打开</button>
+      <button class="stage__close" id="stageClose" type="button" aria-label="收起">收起</button>
+    </div>
+
     <nav class="filters" id="filters" aria-label="分类筛选"></nav>
 
     <main id="groups"></main>
@@ -69,5 +80,6 @@
 
   <script src="./data/links.js"></script>
   <script src="./assets/app.js"></script>
+  <script type="module" src="./assets/shelf3d.js"></script>
 </body>
 </html>

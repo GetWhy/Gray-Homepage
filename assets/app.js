@@ -538,6 +538,14 @@
     document.body.classList.add("is-settled");
   }, 900);
 
+  // 供 3D 书架（shelf3d.js）调用：选中某个分组并刷新列表
+  window.NAV_API = {
+    selectGroup: function (id) {
+      setActiveFilter(id);
+      applyFilter(true);
+    }
+  };
+
   if (!groups.length) {
     el.empty.hidden = false;
     el.empty.textContent = "还没有站点。打开 data/links.js，往 groups 里加一条就行。";
