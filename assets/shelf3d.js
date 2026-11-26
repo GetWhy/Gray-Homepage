@@ -466,7 +466,9 @@ async function init() {
     const half = Math.tan((FOV * Math.PI) / 360);
     const aspect = width / height;
     const distance = Math.max(boundsH / 2 / half, boundsW / 2 / (half * aspect)) * (stacked ? 1.05 : 1.07);
-    const tilt = stacked ? 0.02 : 0.07;
+    // 相机完全平视：只要带一点俯视角，画面两侧的竖边就会向中间收，
+    // 离中心越远越明显（最左那本看着是歪的）。代价是看不到层板顶面，层板靠自身厚度和投影来表现。
+    const tilt = 0;
     camera.aspect = aspect;
     camera.position.set(0, boundsCy + distance * Math.sin(tilt), distance * Math.cos(tilt));
     camera.lookAt(0, boundsCy, 0);
