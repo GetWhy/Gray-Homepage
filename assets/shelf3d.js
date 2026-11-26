@@ -374,7 +374,9 @@ async function init() {
         return { x: b.x, y: b.y + lift, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 1 };
       }
       if (book === hovered) {
-        return { x: b.x, y: b.y + 0.3, z: b.z + 0.05, rx: 0, ry: 0, rz: 0, s: 1.07, o: 1 };
+        // 底边留在层板上、以底边为轴放大，像被向上抽出来一截；
+        // 保留原有的倾角，否则同一排里会出现一本正对、其余向后靠
+        return { x: b.x, y: b.y, z: b.z + 0.04, rx: b.rx, ry: b.ry, rz: b.rz, s: 1.16, o: 1 };
       }
     }
     return { x: b.x, y: b.y, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 1 };
