@@ -385,8 +385,8 @@ h1 {
   flex-wrap: wrap;
   gap: 46px 0;
   margin: 22px -1.5px 4px;
-  perspective: 620px;
-  perspective-origin: 50% 42%;
+  perspective: 480px;
+  perspective-origin: 50% 38%;
 }
 
 /* 一本一本落到位：带一点倾斜惯性 */

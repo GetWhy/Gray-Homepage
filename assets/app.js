@@ -286,8 +286,8 @@
   /* 分组书架 ------------------------------------------------------------ */
   var SHAPES = ["circle", "grid", "stripe", "arc"];
   // 书架上的杂志不是摆得笔直的：TILTS 是左右歪斜，TILT_X 是前后仰角（负值向后靠）
-  var TILTS = [-1.7, 0.9, -0.6, 1.5, -1.2, 0.7, -1.9, 1.2];
-  var TILT_X = [8, 3.5, 9.5, 2.4, 6.5, 4.6, 8.6, 3];
+  var TILTS = [-0.9, 0.5, -0.4, 0.8, -0.7, 0.4, -1, 0.6];
+  var TILT_X = [20, 15, 22, 13, 18, 16, 21, 14];
 
   function buildCover(entry, index) {
     var slot = document.createElement("button");
