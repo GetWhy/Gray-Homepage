@@ -11,7 +11,7 @@ nav/
 │  ├─ style.css        样式（含深浅色主题）
 │  ├─ app.js           渲染、搜索、筛选、时钟、节气背景
 │  ├─ shelf3d.js       3D 书架（three.js，模块脚本）
-│  ├─ vendor/          three.module.min.js（r170，MIT）
+│  ├─ vendor/          three.module.min.js（r170，MIT）、字体子集
 │  └─ bg/2025/         24 张节气插画（webp）
 ├─ data/
 │  └─ links.js         站点数据 —— 只改这里
@@ -124,6 +124,7 @@ git add . && git commit -m "chore: 更新链接" && git push
 | 组件 | 版本 | 许可 | 用途 |
 | --- | --- | --- | --- |
 | three.js | r170 | MIT | 3D 书架渲染，文件在 `assets/vendor/` |
+| 霞鹜文楷 LXGW WenKai | v1.530 | SIL OFL 1.1 | 全站字体，子集 134 KB，在 `assets/vendor/` |
 
 
 
@@ -180,6 +181,21 @@ git add . && git commit -m "chore: 更新链接" && git push
 整体节奏由两个变量控制：`--ease-out`（常规缓动）与 `--ease-spring`（回弹），都在 `:root` 里。
 
 系统开启「减少动态效果」时，上述动画与过渡全部关闭（`prefers-reduced-motion` 媒体查询 + JS 侧的 `canAnimate` 判断）。
+
+## 字体
+
+全站使用**霞鹜文楷**（LXGW WenKai，SIL OFL 1.1）。完整字体 24MB，直接加载会让首屏等很久，所以只保留页面实际用到的字符：
+
+- `assets/vendor/lxgw-wenkai-subset.woff2` —— 704 个字符，134 KB
+- 由 `scripts/build-font-subset.py` 生成：扫描 `index.html`、`data/links.js`、`app.js`、`shelf3d.js` 里出现过的所有字符，用 fonttools 裁出子集
+- **新增站点后如果某个字看着像系统黑体**，说明字体里没有这个字，重跑一次脚本：
+
+  ```bash
+  python scripts/build-font-subset.py <字体文件路径>
+  ```
+
+  字体文件下载：<https://github.com/lxgw/LxgwWenKai/releases/download/v1.530/LXGWWenKai-Regular.ttf>
+- 书架封面是 canvas 画的，`shelf3d.js` 在生成纹理前会 `await document.fonts.load(...)`，否则画出来的是兜底字形
 
 ## 配色
 

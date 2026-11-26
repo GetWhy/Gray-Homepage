@@ -12,7 +12,7 @@ import * as THREE from './vendor/three.module.min.js';
 
 init();
 
-function init() {
+async function init() {
   const data = window.NAV_DATA;
   const api = window.NAV_API;
   const stage = document.getElementById('stage');
@@ -86,8 +86,8 @@ function init() {
   /* ---------- 封面纹理 ---------- */
   const S = 640;
   const K = S / 208;
-  const SERIF = '"Songti SC","Noto Serif CJK SC","Source Han Serif SC","SimSun",Georgia,serif';
-  const SANS = '-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
+  const SERIF = '"LXGW WenKai","Songti SC","Noto Serif CJK SC","SimSun",Georgia,serif';
+  const SANS = '"LXGW WenKai",-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
 
   function drawCover(entry, compact) {
     const c = document.createElement('canvas');
@@ -272,6 +272,16 @@ function init() {
   new MutationObserver(() => {
     shelfMat.color.set(readShelfColor());
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  // canvas 画出来的字形取决于字体是否已就绪，所以等文楷加载完再生成封面纹理
+  if (document.fonts && document.fonts.load) {
+    try {
+      await document.fonts.load('400 24px "LXGW WenKai"');
+      await document.fonts.load('500 24px "LXGW WenKai"');
+    } catch (err) {
+      /* 字体没加载成功就用兜底字形，不影响功能 */
+    }
+  }
 
   const geometry = new THREE.BoxGeometry(W, H, THICK);
   geometry.translate(0, H / 2, 0); // 旋转轴挪到底边
