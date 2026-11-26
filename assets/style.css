@@ -1000,10 +1000,12 @@ body.is-settled .card {
   transform: translate(-50%, 8px);
 }
 
+/* 「查看」只是视觉提示，不接收指针：否则按钮出现在指针下方时会让悬停来回抖动。
+   点击落在画布上同样触发放大。 */
 .stage.is-hover:not(.is-focus) .stage__open {
   opacity: 1;
   transform: translate(-50%, 0);
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .stage__enter {

@@ -88,7 +88,7 @@ function init() {
   const SERIF = '"Songti SC","Noto Serif CJK SC","Source Han Serif SC","SimSun",Georgia,serif';
   const SANS = '-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
 
-  function drawCover(entry) {
+  function drawCover(entry, compact) {
     const c = document.createElement('canvas');
     c.width = S;
     c.height = S;
@@ -143,13 +143,25 @@ function init() {
     const pad = 15 * K;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillStyle = 'rgba(247,242,231,0.6)';
-    ctx.font = '500 ' + 10 * K + 'px ' + SANS;
-    ctx.fillText(pad2(entry.index + 1), pad, pad + 8 * K);
+    if (compact) {
+      // 堆叠时每本只露出顶部一条：标题和序号并排放进这一条里，像书脊标签
+      ctx.font = '500 ' + 24 * K + 'px ' + SERIF;
+      ctx.fillStyle = '#f7f2e7';
+      ctx.fillText(entry.name, pad, 43 * K);
+      ctx.font = '500 ' + 10 * K + 'px ' + SANS;
+      ctx.fillStyle = 'rgba(247,242,231,0.6)';
+      ctx.textAlign = 'right';
+      ctx.fillText(pad2(entry.index + 1), S - pad, 41 * K);
+      ctx.textAlign = 'left';
+    } else {
+      ctx.fillStyle = 'rgba(247,242,231,0.6)';
+      ctx.font = '500 ' + 10 * K + 'px ' + SANS;
+      ctx.fillText(pad2(entry.index + 1), pad, pad + 8 * K);
 
-    ctx.fillStyle = '#f7f2e7';
-    ctx.font = '500 ' + 26 * K + 'px ' + SERIF;
-    ctx.fillText(entry.name, pad, pad + 40 * K);
+      ctx.fillStyle = '#f7f2e7';
+      ctx.font = '500 ' + 26 * K + 'px ' + SERIF;
+      ctx.fillText(entry.name, pad, pad + 40 * K);
+    }
 
     ctx.globalAlpha = 0.74;
     ctx.font = '400 ' + 10.5 * K + 'px ' + SANS;
@@ -248,6 +260,7 @@ function init() {
     const sharpCanvas = drawCover(entry);
     const sharp = toTexture(sharpCanvas);
     const blur = toTexture(drawBlurred(sharpCanvas));
+    const spine = toTexture(drawCover(entry, true));
 
     const front = new THREE.MeshStandardMaterial({ map: sharp, roughness: 0.86, metalness: 0, transparent: true });
     const side = new THREE.MeshStandardMaterial({ color: 0xf1e9da, roughness: 0.92, metalness: 0, transparent: true });
@@ -268,6 +281,7 @@ function init() {
       back,
       sharp,
       blur,
+      spine,
       base: { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0 },
       cur: { x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: 0, s: 1, o: 1 },
       dimmed: false,
@@ -294,14 +308,20 @@ function init() {
     book.back.opacity = value;
   }
 
-  function setDimmed(book, value) {
-    if (book.dimmed === value) {
-      return;
+  // 堆叠布局里，只有顶部露出一条的用书脊排版；完整露出的最后一本和被放大的那本用整幅封面；虚化的用模糊版
+  function refreshMap(book) {
+    const last = books[books.length - 1];
+    const map = book.dimmed ? book.blur : stacked && book !== focused && book !== last ? book.spine : book.sharp;
+    if (book.front.map !== map) {
+      book.front.map = map;
+      book.front.needsUpdate = true;
     }
+  }
+
+  function setDimmed(book, value) {
     book.dimmed = value;
-    book.front.map = value ? book.blur : book.sharp;
-    book.front.needsUpdate = true;
     book.mesh.castShadow = !value;
+    refreshMap(book);
   }
 
   function targetFor(book) {
@@ -313,6 +333,10 @@ function init() {
       return { x: b.x, y: b.y, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 0.36 };
     }
     if (state === 'hover' && book === hovered) {
+      // 堆叠布局里书是一条压一条的，抬起会盖住上一条，所以只提亮、不移动
+      if (stacked) {
+        return { x: b.x, y: b.y, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 1 };
+      }
       return { x: b.x, y: b.y + 0.3, z: b.z + 0.05, rx: 0, ry: 0, rz: 0, s: 1.07, o: 1 };
     }
     return { x: b.x, y: b.y, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 1 };
@@ -346,7 +370,7 @@ function init() {
     }
 
     if (stacked) {
-      const step = 0.18;
+      const step = 0.21;
       books.forEach((book, i) => {
         book.base = { x: 0, y: -i * step, z: i * 0.07, rx: -0.03, ry: 0, rz: 0 };
         book.delay = i * 60;
@@ -403,6 +427,7 @@ function init() {
 
     renderer.setSize(width, height, false);
 
+    books.forEach(refreshMap);
     if (focused) {
       focusGoal = computeFocusGoal();
     }
@@ -455,10 +480,12 @@ function init() {
 
   function focusOn(book) {
     focused = book;
+    glow(hovered, 0);
     hovered = null;
     state = 'focus';
     focusGoal = computeFocusGoal();
     books.forEach((other) => setDimmed(other, other !== book));
+    books.forEach(refreshMap);
     focusName.textContent = book.entry.name;
     const e = book.entry;
     focusDesc.textContent = e.sample.join('、') + (e.count > e.sample.length ? ' 等 ' + e.count + ' 个站点' : ' · 共 ' + e.count + ' 个站点');
@@ -474,6 +501,7 @@ function init() {
     focused = null;
     hovered = null;
     books.forEach((book) => setDimmed(book, false));
+    books.forEach(refreshMap);
     syncStageClass();
     if (scrollToList && id) {
       api.selectGroup(id);
@@ -486,9 +514,21 @@ function init() {
     }
   }
 
+  function glow(book, value) {
+    if (book) {
+      book.front.emissive.setScalar(value);
+    }
+  }
+
   function setHovered(book) {
     if (state === 'focus') {
       return;
+    }
+    if (hovered && hovered !== book) {
+      glow(hovered, 0);
+    }
+    if (book && stacked) {
+      glow(book, 0.09);
     }
     hovered = book;
     state = book ? 'hover' : 'idle';
@@ -560,7 +600,8 @@ function init() {
   function updateOverlay() {
     if (state === 'hover' && hovered) {
       const cur = hovered.cur;
-      const p = project(cur.x, cur.y + 0.17 * cur.s, cur.z);
+      const lift = stacked ? 0.9 : 0.17;
+      const p = project(cur.x, cur.y + lift * cur.s, cur.z);
       openBtn.style.left = p.x + 'px';
       openBtn.style.top = p.y - 14 + 'px';
     } else if (state === 'focus' && focused) {
