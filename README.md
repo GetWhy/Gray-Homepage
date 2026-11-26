@@ -161,7 +161,7 @@ Windows 首次运行如果手机访问不了，是防火墙拦了 Python 的入�
 | 杂志的倾角 | `shelf3d.js` 顶部的 `TILT_X`（前后）、`TILT_Z`（左右，默认全 0） |
 | 内容区宽度 | `style.css` 的 `.page` 的 `max-width`（当前 1180px，占 1440 窗口约 82%） |
 | 舞台高度 | `style.css` 的 `.stage`（桌面 620px，窄屏 `min(750px, 210vw)`） |
-| 放大后的位置与大小 | `shelf3d.js` 的 `computeFocusGoal()` |
+| 放大后的位置与大小 | `shelf3d.js` 的 `computeFocusGoal()`（倾角固定为 0，别再给它加后仰/侧转） |
 | 光照 / 层板投影浓度 | `shelf3d.js` 里的 `sun` / `shadowTexture` 与 `0.62 * shelfOpacity` |
 
 实现上有两个容易踩的点，已处理，改代码时留意：

@@ -506,10 +506,10 @@ async function init() {
       cy = 0;
     }
     const center = camera.localToWorld(new THREE.Vector3(cx, cy, -d));
-    // 桌面略微后仰并侧转，看得出是一本有厚度的册子；
-    // 窄屏画面小，同样的侧转会让顶边明显倾斜，所以几乎正对
-    const tiltX = stacked ? -0.06 : -0.12;
-    const tiltY = stacked ? 0 : -0.06;
+    // 放大后完全正对镜头。哪怕 0.1 弧度的后仰/侧转，在放大尺寸下也会让
+    // 左右边上下错开 8–10px、顶边变斜，看着就是歪的。
+    const tiltX = 0;
+    const tiltY = 0;
     return { x: center.x, y: center.y - (H * scale) / 2, z: center.z, rx: tiltX, ry: tiltY, rz: 0, s: scale };
   }
 
