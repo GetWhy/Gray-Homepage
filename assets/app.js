@@ -143,6 +143,8 @@
       node.classList.toggle("is-active", node.dataset.group === id);
     });
     if (el.shelf) {
+      // 书架不再有「全部」封面，选中全部时让所有封面保持满饱和
+      el.shelf.classList.toggle("is-all", id === "all");
       Array.prototype.forEach.call(el.shelf.children, function (node) {
         var on = node.dataset.group === id;
         node.classList.toggle("is-active", on);
@@ -287,15 +289,13 @@
   function buildCover(entry, index) {
     var slot = document.createElement("button");
     slot.type = "button";
-    slot.className = "slot" + (entry.id === "all" ? " slot--all" : "");
+    slot.className = "slot";
     slot.dataset.group = entry.id;
     slot.dataset.shape = SHAPES[index % SHAPES.length];
     slot.setAttribute("aria-pressed", "false");
     slot.setAttribute("aria-label", entry.name + "，共 " + entry.count + " 个站点");
 
-    if (entry.id !== "all") {
-      slot.style.setProperty("--tone", "var(--tone-" + (entry.tone || "clay") + ")");
-    }
+    slot.style.setProperty("--tone", "var(--tone-" + (entry.tone || "clay") + ")");
 
     var cover = document.createElement("span");
     cover.className = "cover";
@@ -340,22 +340,15 @@
     }
     el.shelf.textContent = "";
 
-    var total = 0;
-    groups.forEach(function (group) {
-      total += group.items.length;
+    var entries = groups.map(function (group) {
+      return {
+        id: group.id || group.name,
+        name: group.name,
+        en: group.en || String(group.id || "").toUpperCase(),
+        count: group.items.length,
+        tone: group.tone
+      };
     });
-
-    var entries = [{ id: "all", name: "全部", en: "ALL", count: total }].concat(
-      groups.map(function (group) {
-        return {
-          id: group.id || group.name,
-          name: group.name,
-          en: group.en || String(group.id || "").toUpperCase(),
-          count: group.items.length,
-          tone: group.tone
-        };
-      })
-    );
 
     entries.forEach(function (entry, index) {
       el.shelf.appendChild(buildCover(entry, index));
