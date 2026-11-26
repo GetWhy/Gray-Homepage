@@ -3,8 +3,23 @@
 
   var data = window.NAV_DATA || {};
   var meta = data.meta || {};
+  // 分组可以是扁平的 items，也可以再用 sections 分二级
+  function itemsOf(group) {
+    var list = [];
+    if (Array.isArray(group.sections)) {
+      group.sections.forEach(function (sub) {
+        (sub.items || []).forEach(function (item) {
+          list.push(item);
+        });
+      });
+    } else if (Array.isArray(group.items)) {
+      list = group.items;
+    }
+    return list;
+  }
+
   var groups = (data.groups || []).filter(function (group) {
-    return group && group.name && Array.isArray(group.items) && group.items.length;
+    return group && group.name && itemsOf(group).length > 0;
   });
 
   var el = {
@@ -154,7 +169,7 @@
   }
 
   /* 卡片 ---------------------------------------------------------------- */
-  function buildCard(item, group, index) {
+  function buildCard(item, group, index, subName) {
     var host = hostOf(item.url);
     var tone = group.tone || "clay";
 
@@ -211,7 +226,7 @@
     card.appendChild(icon);
     card.appendChild(body);
 
-    card.dataset.search = [item.name, item.desc || "", host, group.name]
+    card.dataset.search = [item.name, item.desc || "", host, group.name, subName || ""]
       .join(" ")
       .toLowerCase();
 
@@ -268,17 +283,46 @@
       head.appendChild(label);
       head.appendChild(count);
 
-      var grid = document.createElement("div");
-      grid.className = "grid";
+      section.appendChild(head);
+
       var order = 0;
-      group.items.forEach(function (item) {
-        if (item && item.name && item.url) {
-          grid.appendChild(buildCard(item, group, order++));
+      var subs =
+        group.sections && group.sections.length
+          ? group.sections
+          : [{ name: "", items: group.items || [] }];
+
+      subs.forEach(function (sub) {
+        var wrap = document.createElement("div");
+        wrap.className = "subsection";
+
+        if (sub.name) {
+          var subHead = document.createElement("div");
+          subHead.className = "subhead";
+
+          var dot = document.createElement("span");
+          dot.className = "subhead__dot";
+
+          var label = document.createElement("h3");
+          label.className = "subhead__name";
+          label.textContent = sub.name;
+
+          subHead.appendChild(dot);
+          subHead.appendChild(label);
+          wrap.appendChild(subHead);
         }
+
+        var grid = document.createElement("div");
+        grid.className = "grid";
+        (sub.items || []).forEach(function (item) {
+          if (item && item.name && item.url) {
+            grid.appendChild(buildCard(item, group, order++, sub.name));
+          }
+        });
+
+        wrap.appendChild(grid);
+        section.appendChild(wrap);
       });
 
-      section.appendChild(head);
-      section.appendChild(grid);
       el.container.appendChild(section);
     });
   }
@@ -356,7 +400,7 @@
         id: group.id || group.name,
         name: group.name,
         en: group.en || String(group.id || "").toUpperCase(),
-        count: group.items.length,
+        count: itemsOf(group).length,
         tone: group.tone
       };
     });
@@ -408,6 +452,10 @@
         if (show) {
           count++;
         }
+      });
+
+      Array.prototype.forEach.call(section.querySelectorAll(".subsection"), function (sub) {
+        sub.hidden = sub.querySelectorAll(".card:not([hidden])").length === 0;
       });
 
       section.hidden = count === 0;

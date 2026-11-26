@@ -143,14 +143,37 @@ window.NAV_DATA = {
       name: "工具",
       en: "TOOLS",
       tone: "amber",
-      items: [
-        { name: "GitHub", url: "https://github.com", desc: "仓库 · Pages" },
-        { name: "Obsidian", url: "https://obsidian.md", desc: "本地笔记 · 双链" },
-        { name: "LocalSend", url: "https://localsend.org", desc: "局域网互传" },
-        { name: "DeepL 翻译", url: "https://www.deepl.com/translator", desc: "中英互译" },
-        { name: "正则 101", url: "https://regex101.com", desc: "正则调试" },
-        { name: "Excalidraw", url: "https://excalidraw.com", desc: "手绘风画图" },
-        { name: "中国天气", url: "https://www.weather.com.cn", desc: "预报" }
+      sections: [
+        {
+          name: "设计",
+          items: [
+            { name: "Web Motion", url: "https://holynova.github.io/web-motion-showcase/?lang=zh&theme=slate&mode=light", desc: "前端动效 showcases" },
+            { name: "Awwwards", url: "https://www.awwwards.com", desc: "网页设计评选" },
+            { name: "recent.design", url: "https://recent.design", desc: "精选网页 · 原 Godly" },
+            { name: "HTTPSTER", url: "https://httpster.net", desc: "网页设计灵感" },
+            { name: "Land-book", url: "https://land-book.com", desc: "落地页参考" },
+            { name: "Muzli", url: "https://muz.li", desc: "设计资讯聚合" },
+            { name: "21st.dev", url: "https://21st.dev", desc: "现代 UI 组件" },
+            { name: "CodePen", url: "https://codepen.io", desc: "动效 demo 场" }
+          ]
+        },
+        {
+          name: "开发",
+          items: [
+            { name: "GitHub", url: "https://github.com", desc: "仓库 · Pages" },
+            { name: "Obsidian", url: "https://obsidian.md", desc: "本地笔记 · 双链" },
+            { name: "正则 101", url: "https://regex101.com", desc: "正则调试" },
+            { name: "Excalidraw", url: "https://excalidraw.com", desc: "手绘风画图" }
+          ]
+        },
+        {
+          name: "生活",
+          items: [
+            { name: "LocalSend", url: "https://localsend.org", desc: "局域网互传" },
+            { name: "DeepL 翻译", url: "https://www.deepl.com/translator", desc: "中英互译" },
+            { name: "中国天气", url: "https://www.weather.com.cn", desc: "预报" }
+          ]
+        }
       ]
     }
   ]

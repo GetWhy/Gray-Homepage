@@ -674,6 +674,38 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
+/* 二级分组：设计 / 开发 / 生活 */
+.subsection + .subsection {
+  margin-top: 18px;
+}
+
+.subhead {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 16px 0 9px;
+}
+
+.group__head + .subsection .subhead {
+  margin-top: 10px;
+}
+
+.subhead__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--tone, var(--accent));
+  opacity: 0.65;
+}
+
+.subhead__name {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
@@ -797,6 +829,7 @@ body.is-settled .card {
 }
 
 .group[hidden],
+.subsection[hidden],
 .card[hidden] {
   display: none;
 }
