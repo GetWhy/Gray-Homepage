@@ -285,11 +285,15 @@
 
   /* 分组书架 ------------------------------------------------------------ */
   var SHAPES = ["circle", "grid", "stripe", "arc"];
+  // 书架上的杂志不是摆得笔直的，每本角度略有出入
+  var TILTS = [-1.7, 0.9, -0.6, 1.5, -1.2, 0.7, -1.9, 1.2];
 
   function buildCover(entry, index) {
     var slot = document.createElement("button");
     slot.type = "button";
     slot.className = "slot";
+    slot.style.setProperty("--i", String(index));
+    slot.style.setProperty("--tilt", TILTS[index % TILTS.length] + "deg");
     slot.dataset.group = entry.id;
     slot.dataset.shape = SHAPES[index % SHAPES.length];
     slot.setAttribute("aria-pressed", "false");
@@ -319,11 +323,16 @@
     count.className = "cover__count";
     count.textContent = pad(entry.count);
 
+    var open = document.createElement("span");
+    open.className = "cover__open";
+    open.textContent = "打开 →";
+
     foot.appendChild(en);
     foot.appendChild(count);
     cover.appendChild(no);
     cover.appendChild(title);
     cover.appendChild(foot);
+    cover.appendChild(open);
     slot.appendChild(cover);
 
     slot.addEventListener("click", function () {

@@ -385,7 +385,18 @@ h1 {
   flex-wrap: wrap;
   gap: 46px 0;
   margin: 22px -1.5px 4px;
-  animation: rise 0.5s var(--ease-out) 0.16s backwards;
+}
+
+/* 一本一本落到位：带一点倾斜惯性 */
+@keyframes place-book {
+  from {
+    opacity: 0;
+    transform: translateY(18px) rotate(calc(var(--tilt, 0deg) * 2.4));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--tilt, 0deg));
+  }
 }
 
 /* 每格自带一段层板，相邻层板首尾相接成一条长板 */
@@ -405,8 +416,8 @@ h1 {
 .slot::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  left: -4px;
+  right: -4px;
   bottom: 0;
   height: 10px;
   border-radius: 1px;
@@ -430,7 +441,10 @@ h1 {
   background: linear-gradient(0deg, rgba(48, 32, 22, 0.26), rgba(48, 32, 22, 0.26)),
     var(--tone, var(--accent));
   box-shadow: 0 2px 5px rgba(58, 50, 43, 0.2);
-  transition: transform 0.32s var(--ease-out), box-shadow 0.32s ease,
+  transform: rotate(var(--tilt, 0deg));
+  animation: place-book 0.62s var(--ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms + 180ms);
+  transition: transform 0.34s var(--ease-out), box-shadow 0.34s ease,
     opacity 0.25s ease, filter 0.25s ease;
 }
 
@@ -522,6 +536,22 @@ h1 {
   font-variant-numeric: tabular-nums;
 }
 
+.cover__foot {
+  transition: opacity 0.2s ease;
+}
+
+.cover__open {
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  bottom: 13px;
+  opacity: 0;
+  transform: translateY(5px);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  transition: opacity 0.22s ease, transform 0.22s var(--ease-out);
+}
+
 .shelf:not(.is-all) .slot:not(.is-active) .cover {
   opacity: 0.86;
   filter: saturate(0.8);
@@ -531,9 +561,18 @@ h1 {
   z-index: 2;
   opacity: 1;
   filter: none;
-  transform: translateY(-9px) scale(1.012);
-  box-shadow: 0 30px 36px -24px rgba(58, 50, 43, 0.8),
-    0 10px 16px -10px rgba(58, 50, 43, 0.4);
+  transform: translateY(-12px) rotate(0deg) scale(1.03);
+  box-shadow: 0 34px 40px -24px rgba(58, 50, 43, 0.85),
+    0 12px 18px -10px rgba(58, 50, 43, 0.45);
+}
+
+.slot:hover .cover__foot {
+  opacity: 0;
+}
+
+.slot:hover .cover__open {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .slot:active .cover {
@@ -838,6 +877,7 @@ body.is-settled .card {
   .search,
   .filters,
   .shelf,
+  .cover,
   .card,
   .empty {
     animation: none !important;
@@ -865,6 +905,10 @@ body.is-settled .card {
   .slot:hover .cover,
   .slot:active .cover {
     transform: none;
+  }
+
+  .cover {
+    transform: none !important;
   }
 
   .card:hover .card__icon,
