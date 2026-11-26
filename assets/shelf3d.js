@@ -145,14 +145,15 @@ function init() {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
     if (compact) {
-      // 堆叠时每本只露出顶部一条：标题和序号并排放进这一条里，像书脊标签
-      ctx.font = '500 ' + 24 * K + 'px ' + SERIF;
+      // 堆叠时每本只露出顶部一条：标题和序号并排放进这一条里，像书脊标签。
+      // 基线要留出汉字下沿（约 0.15em）的位置，否则字底会被下一本压住
+      ctx.font = '500 ' + 22 * K + 'px ' + SERIF;
       ctx.fillStyle = '#f7f2e7';
-      ctx.fillText(entry.name, pad, 43 * K);
+      ctx.fillText(entry.name, pad, 36 * K);
       ctx.font = '500 ' + 10 * K + 'px ' + SANS;
       ctx.fillStyle = 'rgba(247,242,231,0.6)';
       ctx.textAlign = 'right';
-      ctx.fillText(pad2(entry.index + 1), S - pad, 41 * K);
+      ctx.fillText(pad2(entry.index + 1), S - pad, 34 * K);
       ctx.textAlign = 'left';
     } else {
       ctx.fillStyle = 'rgba(247,242,231,0.6)';
@@ -197,7 +198,7 @@ function init() {
   const THICK = 0.045;
   const SHELF_H = 0.07;
   // 堆叠布局：每本露出顶部 STACK_STEP 高的一条；悬停时抬起 LIFT
-  const STACK_STEP = 0.21;
+  const STACK_STEP = 0.22;
   const LIFT = 0.28;
   const FOV = 32;
 
