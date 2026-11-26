@@ -102,6 +102,22 @@ git add . && git commit -m "chore: 更新链接" && git push
 | `icon` | 图标里的字符，不写则取名称首字 |
 | `self` | `true` 时在当前标签页打开 |
 
+## 本地与局域网使用
+
+这个项目**不部署到公网**，只在本机或家庭局域网内使用（节气插画的版权只允许个人使用，公开部署等于公开分发）。
+
+- 双击 `start.bat`：启动服务并打印本机与局域网地址，手机连同一个 WiFi 就能访问
+- 或手动：`python -m http.server 5178 --bind 0.0.0.0`
+- 只在本机看，用 `python -m http.server 5178` 即可
+
+Windows 首次运行如果手机访问不了，是防火墙拦了 Python 的入站连接，在弹窗里允许「专用网络」即可。
+
+## 关于仓库可见性
+
+仓库里有两样东西不适合公开：`assets/bg/` 下的 24 张节气插画（版权），以及最早一次提交使用的真实邮箱。**仓库设为 Private 后**，Pages 自动下线、raw 源码通道失效，两者一并隐藏。
+
+只想关站点、不介意源码公开的话，去 Settings → Pages → Source 设为 None；但注意 public 仓库的文件仍能通过 `raw.githubusercontent.com` 下载。
+
 ## 说明与注意
 
 - **图标**：默认使用名称首字生成彩色方块（`meta.showFavicons: false`）。若你的网络能访问 `icons.duckduckgo.com`，可设为 `true` 换取真实站点图标，取不到时自动回退首字母。
