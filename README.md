@@ -142,7 +142,8 @@ git add . && git commit -m "chore: 更新链接" && git push
 | 想调整什么 | 改哪里 |
 | --- | --- |
 | 杂志的倾角 | `shelf3d.js` 顶部的 `TILT_X`（前后）、`TILT_Z`（左右，默认全 0） |
-| 舞台高度 | `style.css` 的 `.stage`（桌面 500px，窄屏 `min(750px, 210vw)`） |
+| 内容区宽度 | `style.css` 的 `.page` 的 `max-width`（当前 1180px，占 1440 窗口约 82%） |
+| 舞台高度 | `style.css` 的 `.stage`（桌面 620px，窄屏 `min(750px, 210vw)`） |
 | 放大后的位置与大小 | `shelf3d.js` 的 `computeFocusGoal()` |
 | 光照 / 层板投影浓度 | `shelf3d.js` 里的 `sun` / `shadowTexture` 与 `0.62 * shelfOpacity` |
 
