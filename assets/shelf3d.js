@@ -196,6 +196,9 @@ function init() {
   const H = 1;
   const THICK = 0.045;
   const SHELF_H = 0.07;
+  // 堆叠布局：每本露出顶部 STACK_STEP 高的一条；悬停时抬起 LIFT
+  const STACK_STEP = 0.21;
+  const LIFT = 0.28;
   const FOV = 32;
 
   const scene = new THREE.Scene();
@@ -352,12 +355,16 @@ function init() {
       }
       return { x: b.x, y: b.y, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 0.36 };
     }
-    if (state === 'hover' && book === hovered) {
-      // 堆叠布局里书是一条压一条的，抬起会盖住上一条，所以只提亮、不移动
+    if (state === 'hover' && hovered) {
       if (stacked) {
-        return { x: b.x, y: b.y, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 1 };
+        // 堆叠布局：被悬停的那本和它上面的书一起抬起。上面的书相对位置不变，序号不会被盖住；
+        // 下面的书不动，于是它被「抽出来」一截。舞台顶部已为这次抬起预留了 LIFT，不会被裁。
+        const lift = book.entry.index <= hovered.entry.index ? LIFT : 0;
+        return { x: b.x, y: b.y + lift, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 1 };
       }
-      return { x: b.x, y: b.y + 0.3, z: b.z + 0.05, rx: 0, ry: 0, rz: 0, s: 1.07, o: 1 };
+      if (book === hovered) {
+        return { x: b.x, y: b.y + 0.3, z: b.z + 0.05, rx: 0, ry: 0, rz: 0, s: 1.07, o: 1 };
+      }
     }
     return { x: b.x, y: b.y, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 1 };
   }
@@ -398,7 +405,7 @@ function init() {
     }
 
     if (stacked) {
-      const step = 0.21;
+      const step = STACK_STEP;
       books.forEach((book, i) => {
         book.base = { x: 0, y: -i * step, z: i * 0.07, rx: -0.03, ry: 0, rz: 0 };
         book.delay = i * 60;
@@ -406,8 +413,8 @@ function init() {
       const bottom = -(count - 1) * step;
       addShelf(W + 0.16, bottom);
       boundsW = W + 0.16;
-      boundsH = (count - 1) * step + H + SHELF_H;
-      boundsCy = (H - ((count - 1) * step + SHELF_H)) / 2;
+      boundsH = (count - 1) * step + H + SHELF_H + LIFT;
+      boundsCy = (H + LIFT - ((count - 1) * step + SHELF_H)) / 2;
     } else {
       const rows = Math.max(1, Math.ceil(count / 5));
       const cols = Math.ceil(count / rows);
@@ -628,7 +635,7 @@ function init() {
   function updateOverlay() {
     if (state === 'hover' && hovered) {
       const cur = hovered.cur;
-      const lift = stacked ? 0.9 : 0.17;
+      const lift = stacked ? 1 - STACK_STEP - LIFT / 2 : 0.17;
       const p = project(cur.x, cur.y + lift * cur.s, cur.z);
       openBtn.style.left = p.x + 'px';
       openBtn.style.top = p.y - 14 + 'px';
