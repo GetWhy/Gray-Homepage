@@ -45,8 +45,7 @@ window.NAV_DATA = {
         { name: "网易云音乐", url: "https://music.163.com", desc: "歌单" },
         { name: "QQ 音乐", url: "https://y.qq.com", desc: "曲库 · 歌单" },
         { name: "纵横四海", url: "https://www.xiaoyuzhoufm.com/podcast/62694abdb221dd5908417d1e", desc: "小宇宙 · 播客" },
-        { name: "小红书", url: "https://www.xiaohongshu.com", desc: "随手刷" },
-        { name: "什么值得买", url: "https://www.smzdm.com", desc: "比价" }
+        { name: "小红书", url: "https://www.xiaohongshu.com", desc: "随手刷" }
       ]
     },
 
