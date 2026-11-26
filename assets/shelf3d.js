@@ -364,7 +364,7 @@ async function init() {
       if (book === focused) {
         return { ...focusGoal, o: 1 };
       }
-      return { x: b.x, y: b.y, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: 0.36 };
+      return { x: b.x, y: b.y, z: b.z, rx: b.rx, ry: b.ry, rz: b.rz, s: 1, o: stacked ? 0.04 : 0.36 };
     }
     if (state === 'hover' && hovered) {
       if (stacked) {
@@ -502,8 +502,11 @@ async function init() {
       cy = 0;
     }
     const center = camera.localToWorld(new THREE.Vector3(cx, cy, -d));
-    // 略微后仰并侧转，放大后仍能看出是一本有厚度的册子
-    return { x: center.x, y: center.y - (H * scale) / 2, z: center.z, rx: -0.2, ry: -0.16, rz: 0, s: scale };
+    // 桌面略微后仰并侧转，看得出是一本有厚度的册子；
+    // 窄屏画面小，同样的侧转会让顶边明显倾斜，所以几乎正对
+    const tiltX = stacked ? -0.06 : -0.12;
+    const tiltY = stacked ? 0 : -0.06;
+    return { x: center.x, y: center.y - (H * scale) / 2, z: center.z, rx: tiltX, ry: tiltY, rz: 0, s: scale };
   }
 
   /* ---------- 交互 ---------- */
@@ -703,7 +706,7 @@ async function init() {
       g.scale.setScalar(c.s);
     });
 
-    const shelfTarget = state === 'focus' ? 0.4 : 1;
+    const shelfTarget = state === 'focus' ? (stacked ? 0.1 : 0.4) : 1;
     shelfOpacity += (shelfTarget - shelfOpacity) * smooth;
     shelfMat.opacity = shelfOpacity;
     shadowMats.forEach((mat) => { mat.opacity = 0.62 * shelfOpacity; });
