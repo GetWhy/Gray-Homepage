@@ -285,8 +285,9 @@
 
   /* 分组书架 ------------------------------------------------------------ */
   var SHAPES = ["circle", "grid", "stripe", "arc"];
-  // 书架上的杂志不是摆得笔直的，每本角度略有出入
+  // 书架上的杂志不是摆得笔直的：TILTS 是左右歪斜，TILT_X 是前后仰角（负值向后靠）
   var TILTS = [-1.7, 0.9, -0.6, 1.5, -1.2, 0.7, -1.9, 1.2];
+  var TILT_X = [8, 3.5, 9.5, 2.4, 6.5, 4.6, 8.6, 3];
 
   function buildCover(entry, index) {
     var slot = document.createElement("button");
@@ -294,6 +295,7 @@
     slot.className = "slot";
     slot.style.setProperty("--i", String(index));
     slot.style.setProperty("--tilt", TILTS[index % TILTS.length] + "deg");
+    slot.style.setProperty("--tilt-x", TILT_X[index % TILT_X.length] + "deg");
     slot.dataset.group = entry.id;
     slot.dataset.shape = SHAPES[index % SHAPES.length];
     slot.setAttribute("aria-pressed", "false");

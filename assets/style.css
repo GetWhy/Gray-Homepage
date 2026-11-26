@@ -385,17 +385,20 @@ h1 {
   flex-wrap: wrap;
   gap: 46px 0;
   margin: 22px -1.5px 4px;
+  perspective: 620px;
+  perspective-origin: 50% 42%;
 }
 
 /* 一本一本落到位：带一点倾斜惯性 */
 @keyframes place-book {
   from {
     opacity: 0;
-    transform: translateY(18px) rotate(calc(var(--tilt, 0deg) * 2.4));
+    transform: translateY(20px) rotateX(calc(var(--tilt-x, 0deg) * 3))
+      rotate(calc(var(--tilt, 0deg) * 2.4));
   }
   to {
     opacity: 1;
-    transform: translateY(0) rotate(var(--tilt, 0deg));
+    transform: translateY(0) rotateX(var(--tilt-x, 0deg)) rotate(var(--tilt, 0deg));
   }
 }
 
@@ -441,7 +444,8 @@ h1 {
   background: linear-gradient(0deg, rgba(48, 32, 22, 0.26), rgba(48, 32, 22, 0.26)),
     var(--tone, var(--accent));
   box-shadow: 0 2px 5px rgba(58, 50, 43, 0.2);
-  transform: rotate(var(--tilt, 0deg));
+  transform-origin: 50% 100%;
+  transform: rotateX(var(--tilt-x, 0deg)) rotate(var(--tilt, 0deg));
   animation: place-book 0.62s var(--ease-out) backwards;
   animation-delay: calc(var(--i, 0) * 55ms + 180ms);
   transition: transform 0.34s var(--ease-out), box-shadow 0.34s ease,
@@ -561,7 +565,7 @@ h1 {
   z-index: 2;
   opacity: 1;
   filter: none;
-  transform: translateY(-12px) rotate(0deg) scale(1.03);
+  transform: translateY(-14px) rotateX(0deg) rotate(0deg) scale(1.03);
   box-shadow: 0 34px 40px -24px rgba(58, 50, 43, 0.85),
     0 12px 18px -10px rgba(58, 50, 43, 0.45);
 }
