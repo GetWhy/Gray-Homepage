@@ -185,6 +185,7 @@ window.NAV_DATA = {
         {
           name: "生活",
           items: [
+            { name: "Cubox", url: "https://cubox.pro/my/inbox", desc: "稍后读 · 收藏" },
             { name: "LocalSend", url: "https://localsend.org", desc: "局域网互传" },
             { name: "DeepL 翻译", url: "https://www.deepl.com/translator", desc: "中英互译" },
             { name: "中国天气", url: "https://www.weather.com.cn", desc: "预报" }
