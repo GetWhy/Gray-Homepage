@@ -101,13 +101,29 @@ window.NAV_DATA = {
       name: "学习",
       en: "LEARNING",
       tone: "blue",
-      items: [
-        { name: "开发者路线图", url: "https://roadmap.sh", desc: "roadmap.sh · 技能路径" },
-        { name: "English Rolling", url: "https://englishrolling.xyz", desc: "英语跟读 · ESL" },
-        { name: "Hacker News", url: "https://news.ycombinator.com", desc: "技术社区" },
-        { name: "JavaScript Weekly", url: "https://javascriptweekly.com", desc: "前端周刊" },
-        { name: "前端周看", url: "https://frontendweekly.cn", desc: "每日精选" },
-        { name: "前端技术文章", url: "https://fed.chanceyu.com", desc: "ChanceYu 的 RSS 聚合" }
+      sections: [
+        {
+          name: "开发",
+          items: [
+            { name: "开发者路线图", url: "https://roadmap.sh", desc: "roadmap.sh · 技能路径" },
+            { name: "Awesome-FE", url: "https://ziyi2.github.io/awesome/awesomes.html", desc: "Awesome 资源汇总" },
+            { name: "Hacker News", url: "https://news.ycombinator.com", desc: "技术社区" }
+          ]
+        },
+        {
+          name: "前端",
+          items: [
+            { name: "JavaScript Weekly", url: "https://javascriptweekly.com", desc: "前端周刊" },
+            { name: "前端周看", url: "https://frontendweekly.cn", desc: "每日精选" },
+            { name: "前端技术文章", url: "https://fed.chanceyu.com", desc: "ChanceYu 的 RSS 聚合" }
+          ]
+        },
+        {
+          name: "英语",
+          items: [
+            { name: "English Rolling", url: "https://englishrolling.xyz", desc: "英语跟读 · ESL" }
+          ]
+        }
       ]
     },
 
